@@ -45,6 +45,12 @@ def main() -> None:
         col = cohort_counts[cohort_counts["periodo_idx"] == m][["coorte", "retencao"]].rename(columns={"retencao": f"retencao_m{m}"})
         resumo = resumo.merge(col, on="coorte", how="left")
     resumo["receita"] = resumo["receita"].fillna(0)
+    ultimo_mes_observado = df["mes_compra"].max()
+    resumo["coorte_periodo"] = pd.PeriodIndex(resumo["coorte"], freq="M")
+    resumo["maturada_m1"] = resumo["coorte_periodo"].le(ultimo_mes_observado - 1)
+    # Se a coorte já maturou M1 e não houve recompra, a retenção correta é 0 (e não NaN).
+    resumo.loc[resumo["maturada_m1"] & resumo["retencao_m1"].isna(), "retencao_m1"] = 0.0
+    resumo = resumo.drop(columns=["coorte_periodo", "maturada_m1"])
     resumo = resumo.sort_values("coorte")
 
     detalhe = retention_matrix.reset_index()

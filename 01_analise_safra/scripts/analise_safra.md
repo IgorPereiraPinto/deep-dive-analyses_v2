@@ -1,5 +1,5 @@
 """
-analise_safra.py — Análise de Safra (Cohort / Coorte)
+analise_safra.py — Análise de Safra (Cohort)
 =====================================================
 
 OBJETIVO:
